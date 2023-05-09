@@ -1,22 +1,34 @@
 <script setup>
-import { ref } from "vue";
+import { ref, reactive, onMounted } from "vue";
 
 const tableTitle = ref("");
 
-const alphabetArray = [""];
-for (let i = 65; i <= 90; i++) {
-  const letter = String.fromCharCode(i);
-  alphabetArray.push(letter);
+// [A-Z] 배열 생성
+function collArray() {
+  const alphabetArray = [""];
+  for (let i = 65; i <= 90; i++) {
+    const letter = String.fromCharCode(i);
+    alphabetArray.push(letter);
+  }
+  return alphabetArray.slice(0, 10);
 }
 
-const colLength = ref(10);
-const rowLength = ref(30);
-const colItems = alphabetArray.slice(0, colLength.value);
-const rowItems = Array.from({ length: rowLength.value }, (_, idx) => idx + 1);
-const cells = colItems.slice(1, colItems.length);
-console.log(rowItems);
-console.log(colItems);
-console.log(cells);
+const colItems = collArray();
+const rowItems = Array.from({ length: 30 }, (_, idx) => idx + 1);
+const rowList = reactive(
+  rowItems.map((row) => {
+    return colItems.map((col) => {
+      return { id: col + row, value: "", active: false, col: col, row: row };
+    });
+  })
+);
+
+function activeCell(cell) {
+  cell.active = true;
+}
+function deactiveCell(cell) {
+  cell.active = false;
+}
 </script>
 
 <template>
@@ -26,13 +38,22 @@ console.log(cells);
     </caption>
     <thead>
       <tr>
-        <th v-for="col in colItems" :key="col" class="col-index">{{ col }}</th>
+        <th v-for="col in colItems" :key="col" class="col_index" :id="col">{{ col }}</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="row in rowItems" :key="row">
-        <th class="row-index">{{ row }}</th>
-        <td v-for="cell in cells" :key="cell" class="cell"></td>
+      <tr v-for="row in rowList" :key="row[0]">
+        <th class="row_index" :id="row[0]">{{ row[0].id }}</th>
+        <td v-for="num in row.length - 1" class="cell_item" @dblclick="activeCell(row[num])" :id="row[num].id">
+          <input
+            type="text"
+            class="cell_input"
+            v-model="row[num].value"
+            v-if="row[num].active"
+            @blur="deactiveCell(row[num])"
+            autofocus />
+          <span v-else @dblclick="activeCell(row[num])">{{ row[num].value }}</span>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -44,7 +65,6 @@ table {
   border: 1px solid #d6d6d6;
   text-align: left;
   margin: 10px;
-  /* table-layout: fixed; */
 }
 table caption {
   margin: 10px 30px 10px 10px;
@@ -62,20 +82,27 @@ table thead {
   text-align: center;
   font-weight: normal;
 }
-table thead .col-index {
+table thead .col_index {
   width: auto;
   height: auto;
 }
-table tbody {
-}
-table tbody .row-index {
+table tbody .row_index {
   text-align: center;
   width: 5%;
   height: auto;
   font-size: 12px;
   font-weight: normal;
 }
-table tbody .cell {
-  width: 10%;
+table tbody .cell_item {
+  position: relative;
+}
+table tbody .cell_input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 </style>

@@ -2,26 +2,33 @@
 import { ref } from "vue";
 import ControlPannels from "./ControlPannels.vue";
 
+const googleIcon = "material-symbols-outlined";
 // 사이드 메뉴 창 불린
 const isShow = ref("");
 // 사이드 메뉴 창 토글
 const showBox = (menu) => {
   isShow.value === menu ? (isShow.value = "") : (isShow.value = menu);
 };
-const googleIcon = "material-symbols-outlined";
+
 let id = 1;
 const menus = [
   { id: id++, icon: "edit_note", title: "데이터베이스", des: "데이터를 추가/제거하거나 수정합니다" },
   { id: id++, icon: "display_settings", title: "차트스타일", des: "차트 스타일을 변경합니다" },
   { id: id++, icon: "settings", title: "환경설정", des: "사용자에 맞춰 환경을 설정합니다" },
 ];
+
+function checkIcon(e) {
+  const icons = document.querySelectorAll(".snb li span");
+  icons.forEach((icon) => (icon.style.borderRight = "none"));
+  e.target.style.borderRight = "3px solid var(--color-green)";
+}
 </script>
 
 <template>
   <div class="side-box">
     <ul class="snb">
       <li v-for="menu in menus" :key="menu.id" @click="showBox(menu.icon)">
-        <span :class="googleIcon">{{ menu.icon }}</span>
+        <span :class="googleIcon" @click="checkIcon">{{ menu.icon }}</span>
         <div class="snb-side">
           <h2>{{ menu.title }}</h2>
           <p>{{ menu.des }}</p>
