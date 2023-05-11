@@ -39,6 +39,7 @@ function resizeOff(e) {
   grid-column: 2 / 2;
   position: relative;
   overflow: hidden;
+  display: none;
 }
 .box-wrapper .control-box {
   height: 100%;
@@ -61,6 +62,6 @@ function resizeOff(e) {
 .control-box.edit_note,
 .control-box.display_settings,
 .control-box.settings {
-  grid-column: 2 / 2;
+  display: block;
 }
 </style>
